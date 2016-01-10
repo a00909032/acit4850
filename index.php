@@ -1,10 +1,11 @@
 <?php
 
-//no initial param starts a new game
-$position = isset($_GET['board']) ? $_GET['board'] : '---------'; 
+//no initial param or empty value starts a new game
+$position = isset($_GET['board']) ? $_GET['board'] : '---------';
+if (empty($position)) {
+    $position = '---------';
+}
 $squares = $position;
-
-
 
 class Game {
 
@@ -20,14 +21,31 @@ class Game {
             return '<td>' . $token . '</td>';
         }
         $this->newposition = $this->position;
-        $this->newposition[$which] = 'o'; //their move
+        $this->newposition[$which] = $this->pick_move(); //make movement
         $move = implode($this->newposition);
         $link = '/acit4850-lab1/index.php?board=' . $move;
         return '<td><a href="' . $link . '">-</a></td>';
     }
 
     function pick_move() {
-        
+        $array = $this->position; //pass array into a variable for easier use
+        $counts = array_count_values($array); //count variables in the array
+        if (isset($counts['x'])) { //if x exists, count
+            $xnumber = $counts['x'];
+        } else { //otherwise set x to 0 to avoid error msgs
+            $xnumber = 0;
+        }
+        if (isset($counts['o'])) {
+            $onumber = $counts['o'];
+        } else {
+            $onumber = 0;
+        }
+
+        if ($xnumber <= $onumber) {
+            return 'x';
+        } else if ($xnumber > $onumber) {
+            return 'o';
+        }
     }
 
     function display() {
@@ -51,7 +69,7 @@ class Game {
                 $won = true;
             }
         }
-        //check for 2 diagonal 
+        //check for 2 diagonals
         if (($this->position[0] == $token) &&
                 ($this->position[4] == $token) &&
                 ($this->position[8] == $token)) {
@@ -68,11 +86,12 @@ class Game {
 
 $game = new Game($squares);
 
-if ($game->winner('x'))
+if ($game->winner('x')) {
     echo 'X wins';
-else if ($game->winner('o'))
+} else if ($game->winner('o')) {
     echo 'O wins';
-else
+} else {
     echo 'No winner yet';
+}
 $game->display();
 ?>
