@@ -1,7 +1,10 @@
 <?php
 
-$position = $_GET['board'];
+//no initial param starts a new game
+$position = isset($_GET['board']) ? $_GET['board'] : '---------'; 
 $squares = $position;
+
+
 
 class Game {
 
@@ -11,28 +14,34 @@ class Game {
         $this->position = str_split($squares);
     }
 
-    function show_cell($which){
+    function show_cell($which) {
         $token = $this->position[$which];
-        if ($token <> '-') return '<td>'.$token.'</td>';
+        if ($token <> '-') {
+            return '<td>' . $token . '</td>';
+        }
         $this->newposition = $this->position;
-        $this->newposition[$which] = 'o';
+        $this->newposition[$which] = 'o'; //their move
         $move = implode($this->newposition);
-        $link = '/?board='.$move;
-        return '<td><a href="'.$link.'">-</a></td>';
+        $link = '/acit4850-lab1/index.php?board=' . $move;
+        return '<td><a href="' . $link . '">-</a></td>';
     }
-    
-    function display(){
-        echo '<table cols="3" style="font-size:large; font-weight:bold">';
+
+    function pick_move() {
+        
+    }
+
+    function display() {
+        echo '<table cols="3" style="font-size:large; font-weight:bold;">';
         echo '<tr>';
-        for ($pos=0; $pos<9; $pos++){
+        for ($pos = 0; $pos < 9; $pos++) {
             echo $this->show_cell($pos);
-            if ($pos % 3 == 2) echo '</tr></tr>';
+            if ($pos % 3 == 2)
+                echo '</tr></tr>';
         }
         echo '</tr>';
         echo '</table>';
     }
-    
-    
+
     function winner($token) {
         $won = false;
         for ($row = 0; $row < 3; $row++) { //check for vertical and horizontal 
@@ -58,11 +67,12 @@ class Game {
 }
 
 $game = new Game($squares);
-$game->display();
+
 if ($game->winner('x'))
     echo 'X wins';
 else if ($game->winner('o'))
     echo 'O wins';
 else
     echo 'No winner yet';
+$game->display();
 ?>
